@@ -18,7 +18,7 @@ const FacebookLoginButton = () => {
     // Initialize the Facebook SDK
     window.fbAsyncInit = function () {
       window.FB.init({
-        appId: "YOUR_APP_ID", // Replace with your Facebook App ID
+        appId: import.meta.env.VITE_FACEBOOK_APP_ID, // Replace with your Facebook App ID
         cookie: true,
         xfbml: true,
         version: "v18.0", // Use the latest Facebook Graph API version
