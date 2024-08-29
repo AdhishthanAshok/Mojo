@@ -1,6 +1,4 @@
 import React, { useEffect } from "react";
-import FacebookLogin from "react-facebook-login";
-import "./App.css"; // Import Tailwind CSS styles
 
 const FacebookLoginComponent = () => {
   useEffect(() => {
@@ -37,8 +35,6 @@ const FacebookLoginComponent = () => {
       console.log(response);
       if (response.status === "connected") {
         testAPI();
-      } else {
-        // Handle the case when user is not logged in
       }
     };
 
@@ -46,39 +42,42 @@ const FacebookLoginComponent = () => {
       console.log("Fetching your information.... ");
       window.FB.api("/me", { fields: "name,email" }, function (response) {
         console.log("Successful login for: " + response.name);
-        // You can set the state here to display user info
+        // Handle the response as needed
       });
     };
   }, []);
 
-  const responseFacebook = (response) => {
-    console.log(response);
+  const handleLogin = () => {
+    window.FB.login(
+      (response) => {
+        statusChangeCallback(response);
+      },
+      { scope: "public_profile,email" }
+    );
+  };
+
+  const statusChangeCallback = (response) => {
     if (response.status === "connected") {
-      // User is logged in
-      testAPI(response);
-    } else {
-      // User is not logged in
+      testAPI();
     }
   };
 
-  const testAPI = (response) => {
+  const testAPI = () => {
     console.log("Fetching your information.... ");
     window.FB.api("/me", { fields: "name,email" }, function (response) {
       console.log("Successful login for: " + response.name);
-      // You can set the state here to display user info
+      // Handle the response as needed
     });
   };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
-      <FacebookLogin
-        appId="YOUR_APP_ID" // Replace with your App ID
-        autoLoad={false}
-        fields="name,email,picture"
-        callback={responseFacebook}
-        cssClass="bg-blue-500 text-white p-2 rounded"
-        icon="fa-facebook"
-      />
+      <button
+        className="bg-blue-500 text-white p-2 rounded"
+        onClick={handleLogin}
+      >
+        Login with Facebook
+      </button>
     </div>
   );
 };
