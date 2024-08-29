@@ -3,7 +3,7 @@ import FacebookLoginButton from "./components/FacebookLoginButton";
 
 function App() {
   return (
-    <div className="h-screen bg-gray-800 text-white flex items-center justify-center">
+    <div className="h-screen w-screen bg-gray-800 text-white flex items-center justify-center">
       <FacebookLoginButton />
     </div>
   );
