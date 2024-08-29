@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
+import FacebookLogin from "react-facebook-login";
+import "./App.css"; // Import Tailwind CSS styles
 
-const FacebookLoginButton = () => {
+const FacebookLoginComponent = () => {
   useEffect(() => {
     // Load the Facebook SDK asynchronously
     (function (d, s, id) {
-      let js,
+      var js,
         fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) {
         return;
@@ -14,16 +16,15 @@ const FacebookLoginButton = () => {
       js.src = "https://connect.facebook.net/en_US/sdk.js";
       fjs.parentNode.insertBefore(js, fjs);
 
-      js.onload = () => {
+      js.onload = function () {
         window.fbAsyncInit = function () {
           window.FB.init({
-            appId: import.meta.env.VITE_FACEBOOK_APP_ID, // Use your Facebook App ID
+            appId: "435589545512206", // Replace with your App ID
             cookie: true,
             xfbml: true,
-            version: "v20.0", // Use the latest Facebook Graph API version
+            version: "v20.0",
           });
 
-          // Check login status after SDK initialization
           window.FB.getLoginStatus(function (response) {
             statusChangeCallback(response);
           });
@@ -31,66 +32,55 @@ const FacebookLoginButton = () => {
       };
     })(document, "script", "facebook-jssdk");
 
-    function statusChangeCallback(response) {
+    const statusChangeCallback = (response) => {
       console.log("statusChangeCallback");
       console.log(response);
       if (response.status === "connected") {
         testAPI();
       } else {
-        document.getElementById("status").innerHTML =
-          "Please log into this webpage.";
+        // Handle the case when user is not logged in
       }
-    }
+    };
 
-    function testAPI() {
-      console.log("Welcome! Fetching your information.... ");
+    const testAPI = () => {
+      console.log("Fetching your information.... ");
       window.FB.api("/me", { fields: "name,email" }, function (response) {
         console.log("Successful login for: " + response.name);
-        document.getElementById("status").innerHTML =
-          "Thanks for logging in, " + response.name + "!";
+        // You can set the state here to display user info
       });
-    }
-
-    // Cleanup function to avoid potential issues
-    return () => {
-      window.fbAsyncInit = null;
     };
   }, []);
 
-  const handleFBLogin = () => {
-    window.FB.login(
-      function (response) {
-        if (response.authResponse) {
-          console.log("Welcome! Fetching your information...");
-          window.FB.api(
-            "/me",
-            { fields: "name,email,picture" },
-            function (response) {
-              console.log("Good to see you, " + response.name + ".");
-              console.log("Email:", response.email);
-              console.log("Profile Picture:", response.picture.data.url);
-              // You can store user information in your app state here
-            }
-          );
-        } else {
-          console.log("User cancelled login or did not fully authorize.");
-        }
-      },
-      { scope: "public_profile,email" }
-    );
+  const responseFacebook = (response) => {
+    console.log(response);
+    if (response.status === "connected") {
+      // User is logged in
+      testAPI(response);
+    } else {
+      // User is not logged in
+    }
+  };
+
+  const testAPI = (response) => {
+    console.log("Fetching your information.... ");
+    window.FB.api("/me", { fields: "name,email" }, function (response) {
+      console.log("Successful login for: " + response.name);
+      // You can set the state here to display user info
+    });
   };
 
   return (
-    <>
-      <button
-        onClick={handleFBLogin}
-        className="bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center justify-center mt-5 hover:bg-blue-700"
-      >
-        Login with Facebook
-      </button>
-      <div id="status"></div>
-    </>
+    <div className="flex justify-center items-center h-screen bg-gray-100">
+      <FacebookLogin
+        appId="YOUR_APP_ID" // Replace with your App ID
+        autoLoad={false}
+        fields="name,email,picture"
+        callback={responseFacebook}
+        cssClass="bg-blue-500 text-white p-2 rounded"
+        icon="fa-facebook"
+      />
+    </div>
   );
 };
 
-export default FacebookLoginButton;
+export default FacebookLoginComponent;
